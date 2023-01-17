@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explore_with_me.gateway.client.RoleEnum;
+import ru.practicum.explore_with_me.gateway.comment.CommentClient;
+import ru.practicum.explore_with_me.gateway.comment.dto.NewCommentDto;
 import ru.practicum.explore_with_me.gateway.event.EventClient;
 import ru.practicum.explore_with_me.gateway.event.dto.NewEventDto;
 import ru.practicum.explore_with_me.gateway.event.dto.UpdateEventRequest;
@@ -21,9 +23,12 @@ public class UserController {
     private static final String USER_ID_EVENTS_ID_API_PREFIX = USER_ID_API_PREFIX + "/events/{eventId}";
     private static final String USER_ID_EVENTS_REQUEST_ID_API_PREFIX = USER_ID_EVENTS_ID_API_PREFIX + "/requests/{reqId}";
     private static final String USER_ID_REQUEST_API_PREFIX = USER_ID_API_PREFIX + "/requests";
+    private static final String USER_ID_COMMENTS_API_PREFIX = USER_ID_API_PREFIX + "/comments";
+    private static final String USER_ID_COMMENTS_ID_API_PREFIX = USER_ID_API_PREFIX + "/comments/{commentId}";
 
     private final EventClient eventClient;
     private final RequestClient requestClient;
+    private final CommentClient commentClient;
 
 
     @GetMapping(USER_ID_EVENTS_API_PREFIX)
@@ -105,5 +110,70 @@ public class UserController {
                                                 @PathVariable Long reqId) {
         log.info("Отмена запроса пользователя на участие, userId={}, requestId={}", userId, reqId);
         return requestClient.cancelRequest(reqId, userId, RoleEnum.USER);
+    }
+
+    @PostMapping(USER_ID_COMMENTS_API_PREFIX)
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Object> createComment(@RequestBody NewCommentDto requestDto,
+                                                @PathVariable Long userId) {
+        log.info("Создание комментария {} пользователем, userId={}", requestDto, userId);
+        return commentClient.createComment(requestDto, userId, RoleEnum.USER);
+    }
+
+    @GetMapping(USER_ID_COMMENTS_ID_API_PREFIX)
+    public ResponseEntity<Object> getComment(@PathVariable Long userId,
+                                             @PathVariable Long commentId) {
+        log.info("Получение комментария по его индексу, Id={}", commentId);
+        return commentClient.getComment(commentId, userId, RoleEnum.USER);
+    }
+
+    @PutMapping(USER_ID_COMMENTS_ID_API_PREFIX)
+    public ResponseEntity<Object> editComment(@RequestBody NewCommentDto requestDto,
+                                              @PathVariable Long userId,
+                                              @PathVariable Long commentId) {
+        log.info("Правка комментария, Id={}", commentId);
+        return commentClient.editComment(requestDto, commentId, userId, RoleEnum.USER);
+    }
+
+    @PatchMapping(USER_ID_COMMENTS_ID_API_PREFIX + "/like")
+    public ResponseEntity<Object> likeComment(@PathVariable Long userId,
+                                              @PathVariable Long commentId) {
+        log.info("Лайк/Дизлайк комментарию, Id={}", commentId);
+        return commentClient.likeComment(commentId, userId, RoleEnum.USER);
+    }
+
+    @PatchMapping(USER_ID_COMMENTS_ID_API_PREFIX + "/unknown")
+    public ResponseEntity<Object> unknownComment(@PathVariable Long userId,
+                                                 @PathVariable Long commentId) {
+        log.info("Снятие отметок о лайках/дизлайках к комментарию, Id={}", commentId);
+        return commentClient.unknownComment(commentId, userId, RoleEnum.USER);
+    }
+
+    @PatchMapping(USER_ID_COMMENTS_ID_API_PREFIX + "/dislike")
+    public ResponseEntity<Object> dislikeComment(@PathVariable Long userId,
+                                                 @PathVariable Long commentId) {
+        log.info("Дизлайк комментарию, Id={}", commentId);
+        return commentClient.dislikeComment(commentId, userId, RoleEnum.USER);
+    }
+
+    @DeleteMapping(USER_ID_COMMENTS_ID_API_PREFIX)
+    public ResponseEntity<Object> removeComment(@PathVariable Long userId,
+                                                @PathVariable Long commentId) {
+        log.info("Удаление комментария, Id={}", commentId);
+        return commentClient.removeComment(commentId, userId, RoleEnum.USER);
+    }
+
+    @GetMapping(USER_ID_COMMENTS_API_PREFIX)
+    public ResponseEntity<Object> findComments(@PathVariable Long userId,
+                                               @RequestParam(required = false) String text,
+                                               @RequestParam(required = false) Long eventId,
+                                               @RequestParam(required = false) String rangeStart,
+                                               @RequestParam(required = false) String rangeEnd,
+                                               @RequestParam(required = false) String[] state,
+                                               @RequestParam(required = false) String sort,
+                                               @RequestParam(required = false, defaultValue = "0") int from,
+                                               @RequestParam(required = false, defaultValue = "10") int size) {
+        return commentClient.findComments(text, userId, eventId, rangeStart, rangeEnd, state, sort, from, size,
+                RoleEnum.USER);
     }
 }

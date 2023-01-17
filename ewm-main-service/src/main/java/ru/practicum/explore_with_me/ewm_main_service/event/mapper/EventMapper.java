@@ -19,4 +19,6 @@ public interface EventMapper {
 
     EventShortDto toShortDto(Event event, Long confirmedRequests);
 
+    EventSysDto toDto(Event event);
+
 }
