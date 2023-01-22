@@ -26,6 +26,7 @@
         <module>ewm-gateway</module>
 		<module>ewm-main-service</module>
        	<module>ewm-stats-service</module>
+		<module>ewm-feature-service</module>
 	</modules>
 
 	<build>

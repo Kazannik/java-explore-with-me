@@ -21,6 +21,8 @@ public interface EventService {
 
     Event getEvent(Long eventId);
 
+    EventSysDto getEventSys(Long eventId);
+
     EventShortDto getEvent(Long eventId, String role) throws AccessForbiddenException;
 
     Event getEvent(Long eventId, Long userId);

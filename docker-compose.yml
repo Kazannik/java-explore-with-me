@@ -10,9 +10,11 @@ services:
     depends_on:
       - ewm-main-service
       - ewm-stats-service
+      - ewm-feature-service
     environment:
       - MAIN_SERVER_URL=http://ewm-main-service:8080
       - STATS_SERVER_URL=http://ewm-stats-service:8080
+      - FEATURE_SERVER_URL=http://ewm-feature-service:8080
 
   ewm-main-service:
     build: ewm-main-service
@@ -53,5 +55,28 @@ services:
       - "6543:5432"
     environment:
       - POSTGRES_DB=stats-db
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+
+  ewm-feature-service:
+    build: ewm-feature-service
+    image: kazannik-ewm-feature
+    container_name: ewm-feature
+    depends_on:
+      - ewm-main-service
+      - ewm-feature-db
+    ports:
+      - "6544:8080"
+    environment:
+      - MAIN_SERVER_URL=http://ewm-main-service:8080
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-feature-db:5432/feature-db
+
+  ewm-feature-db:
+    image: postgres:14-alpine
+    container_name: feature-postgres
+    ports:
+      - "6545:5432"
+    environment:
+      - POSTGRES_DB=feature-db
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root

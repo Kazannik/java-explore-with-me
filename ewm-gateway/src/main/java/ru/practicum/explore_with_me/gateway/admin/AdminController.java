@@ -9,6 +9,7 @@ import ru.practicum.explore_with_me.gateway.category.CategoryClient;
 import ru.practicum.explore_with_me.gateway.category.dto.CategoryDto;
 import ru.practicum.explore_with_me.gateway.category.dto.NewCategoryDto;
 import ru.practicum.explore_with_me.gateway.client.RoleEnum;
+import ru.practicum.explore_with_me.gateway.comment.CommentClient;
 import ru.practicum.explore_with_me.gateway.compilation.CompilationClient;
 import ru.practicum.explore_with_me.gateway.compilation.dto.NewCompilationDto;
 import ru.practicum.explore_with_me.gateway.event.EventClient;
@@ -34,6 +35,7 @@ public class AdminController {
     private final CompilationClient compilationClient;
     private final EventClient eventClient;
     private final UserClient userClient;
+    private final CommentClient commentClient;
 
 
     @PostMapping(CATEGORIES_API_PREFIX)
@@ -146,5 +148,42 @@ public class AdminController {
     public ResponseEntity<Object> removeUser(@PathVariable Long userId) {
         log.info("Удаление пользователя, userId={}", userId);
         return userClient.removeUser(userId, RoleEnum.ADMINISTRATOR);
+    }
+
+    @GetMapping("/comments/{commentId}")
+    public ResponseEntity<Object> getComment(@PathVariable Long commentId) {
+        log.info("Получение комментария по его индексу, Id={}", commentId);
+        return commentClient.getComment(commentId, RoleEnum.ADMINISTRATOR);
+    }
+
+    @PatchMapping("/comments/{commentId}/publish")
+    public ResponseEntity<Object> publishComment(@PathVariable Long commentId) {
+        log.info("Публикация комментария, Id={}", commentId);
+        return commentClient.publishComment(commentId, RoleEnum.ADMINISTRATOR);
+    }
+
+    @PatchMapping("/comments/{commentId}/reject")
+    public ResponseEntity<Object> rejectComment(@PathVariable Long commentId) {
+        log.info("Отклонение комментария, Id={}", commentId);
+        return commentClient.rejectComment(commentId, RoleEnum.ADMINISTRATOR);
+    }
+
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<Object> removeComment(@PathVariable Long commentId) {
+        log.info("Удаление комментария, Id={}", commentId);
+        return commentClient.removeComment(commentId, RoleEnum.ADMINISTRATOR);
+    }
+
+    @GetMapping("/comments")
+    public ResponseEntity<Object> findComments(@RequestParam(required = false) String text,
+                                               @RequestParam(required = false) Long eventId,
+                                               @RequestParam(required = false) String rangeStart,
+                                               @RequestParam(required = false) String rangeEnd,
+                                               @RequestParam(required = false) String[] state,
+                                               @RequestParam(required = false) String sort,
+                                               @RequestParam(required = false, defaultValue = "0") int from,
+                                               @RequestParam(required = false, defaultValue = "10") int size) {
+        return commentClient.findComments(text, eventId, rangeStart, rangeEnd, state, sort, from, size,
+                RoleEnum.ADMINISTRATOR);
     }
 }

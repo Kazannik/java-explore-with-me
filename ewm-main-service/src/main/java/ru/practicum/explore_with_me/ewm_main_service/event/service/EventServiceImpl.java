@@ -97,6 +97,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public EventSysDto getEventSys(Long eventId) {
+        return eventMapper.toDto(getEvent(eventId));
+    }
+
+    @Override
     public EventShortDto getEvent(Long eventId, String role) {
         return eventMapper.toShortDto(getEvent(eventId), Long.valueOf(requestRepository
                 .countParticipationByEventIdAndStatus(eventId, RequestStatusEnum.CONFIRMED)));

@@ -54,6 +54,12 @@ public class EventController {
         return eventService.findEvent(users, states, categories, rangeStart, rangeEnd, from, size, userId, role);
     }
 
+    @GetMapping("/{eventId}/sys")
+    public EventSysDto getEventSys(@PathVariable Long eventId) {
+        log.info("Получить событие в системном формате, Id={}", eventId);
+        return eventService.getEventSys(eventId);
+    }
+
     @GetMapping("/{eventId}")
     public EventFullDto getEvent(@PathVariable Long eventId,
                                  @RequestHeader(value = HEADER_USER_ID, required = false) Long userId,

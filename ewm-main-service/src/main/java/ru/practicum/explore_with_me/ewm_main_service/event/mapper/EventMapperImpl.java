@@ -154,6 +154,20 @@ public class EventMapperImpl implements EventMapper {
         return dto;
     }
 
+    @Override
+    public EventSysDto toDto(Event event) {
+        if (event == null) {
+            return null;
+        }
+
+        EventSysDto dto = new EventSysDto();
+        dto.setId(event.getId());
+        dto.setState(event.getState().name());
+        dto.setUserId(event.getInitiator().getId());
+        return dto;
+    }
+
+
     protected UserDto userToUserDto(User user) {
         if (user == null) {
             return null;
